@@ -1,0 +1,189 @@
+2025-08-20 date and 2025-08-20 19:50:45 datetimestamp
+day,month,year FUNCTIONs   --output is interger
+SELECT OrderID,CreationTime,
+YEAR(CreationTime) year,
+MONTH(creationTime) month,
+DAY(creationTime) day
+FROM 
+Sales.Orders
+
+
+  DATEPART -->QUARTER,week  --output is integer  synatax:- DATAPART(part,date)
+
+    SELECT OrderID,CreationTime,
+DATEPART(YEAR,creationtime) year_pt,
+DATEPART(MONTH,creationtime) month_pt,
+DATEPART(DAY,creationtime) day_pt,
+DATEPART(HOUR,creationtime) hour_pt,
+DATEPART(QUARTER,creationtime) quarter_pt,
+DATEPART(WEEKDAY,creationtime) Weekday_pt,
+YEAR(CreationTime) year,
+MONTH(creationTime) month,
+DAY(creationTime) day
+FROM 
+Sales.Orders
+
+
+  DATENAME -->  get monthname,weekname using datename output is string synatax :- DATENAME(part,date)
+
+  SELECT OrderID,CreationTime,
+DATENAME(MONTH,creationtime) month_name,
+DATENAME(WEEKDAY,creationtime) weekday_name,
+DATEPART(YEAR,creationtime) year_pt,
+DATEPART(MONTH,creationtime) month_pt,
+DATEPART(DAY,creationtime) day_pt,
+DATEPART(HOUR,creationtime) hour_pt,
+DATEPART(QUARTER,creationtime) quarter_pt,
+DATEPART(WEEKDAY,creationtime) Weekday_pt,
+YEAR(CreationTime) year,
+MONTH(creationTime) month,
+DAY(creationTime) day
+FROM 
+Sales.Orders
+
+
+DATETRUNC --> It truncate time to 00:00:00 for hours,minutes,seconds where as for date  01:01 example 2026-01-01 00:00:00
+
+SELECT OrderID,CreationTime,
+DATETRUNC(YEAR,creationtime) datetrunc_year,
+DATETRUNC(DAY,creationtime) datetrunc_day,
+DATETRUNC(MINUTE,creationtime) datetrunc_min,
+DATENAME(MONTH,creationtime) month_name,
+DATENAME(WEEKDAY,creationtime) weekday_name,
+DATEPART(YEAR,creationtime) year_pt,
+DATEPART(MONTH,creationtime) month_pt,
+DATEPART(DAY,creationtime) day_pt,
+DATEPART(HOUR,creationtime) hour_pt,
+DATEPART(QUARTER,creationtime) quarter_pt,
+DATEPART(WEEKDAY,creationtime) Weekday_pt,
+YEAR(CreationTime) year,
+MONTH(creationTime) month,
+DAY(creationTime) day
+FROM 
+Sales.Orders
+
+SELECT
+DATETRUNC(MONTH,CreationTime),
+COUNT(OrderID)
+FROM
+Sales.Orders
+GROUP BY DATETRUNC(MONTH,CreationTime) 
+
+EOMONTH() --> End of Month Function gives end of month date
+
+SELECT
+CAST(DATETRUNC(MONTH,CreationTime) AS DATE) StartofMonth,
+EOMONTH(CreationTime) EndofMonth,
+CreationTime
+OrderID
+FROM
+Sales.Orders
+
+Extraction from DATE  Using Month(),DATEPART(month,date)
+  -- Searching is easy for number rather than string or characters.
+
+SELECT
+DATEPART(MONTH,CreationTime),
+COUNT(*)
+FROM
+SalesDB.Sales.Orders
+GROUP BY DATEPART(MONTH,CreationTime)
+
+SELECT
+*
+FROM
+SalesDB.Sales.Orders
+WHERE MONTH(CreationTime)=2
+
+
+comparsion of date extraction functions
+
+DAY,MONTH,YEAR,DATEPART ---> OUTPUT is Integer
+DATENAME                ---->Ouput is string
+DATETRUNC               ----> output is DateTime
+EOMONTH                -----> output is Date
+
+
+DATE FORMATTING & CASTING
+--------------------------
+2025   -  08  - 20    18    :  55  :   45
+yyyy   -  MM  - DD    HH    :  mm  :   ss
+Year    Month   Day   Hour    Minutes  seconds
+
+ISO Format
+-----------
+2025   -  08  - 20 
+yyyy   -  MM  - DD
+
+US - Format
+----------
+08  -   20  - 2025
+MM      DD  - YYYY
+
+eu - Format
+----------
+20  -   08  - 2025
+DD  -   MM  - YYYY
+
+FORMAT   --> syntax  FORMAT(value, format,culture)  default culture en-US
+  when using HH won't AM/PM Its 24 HOURS FORMAT
+  hh  it will show in 12 hour format with AM/PM ... AM/PM format is tt
+  
+SELECT
+CreationTime,
+FORMAT(CreationTime,'MM-dd-yyyy') USformat,
+FORMAT(CreationTime,'dd-MM-yyyy') EUformat,
+FORMAT(CreationTime,'MM') MM,
+FORMAT(CreationTime,'MMM') MMM,
+FORMAT(CreationTime,'MMMM') MMMM,
+FORMAT(CreationTime,'dd') dd,
+FORMAT(CreationTime,'ddd') ddd,
+FORMAT(CreationTime,'dddd') dddd,
+OrderID
+FROM
+SalesDB.Sales.Orders
+
+SELECT
+CreationTime,
+'Day ' + format(CreationTime,'ddd MMM')+' Q'+DATENAME(quarter,CreationTime)+FORMAT(CreationTime,' yyyy hh:mm:ss tt') as format1,
+OrderID
+FROM
+SalesDB.Sales.Orders
+
+output :- Day Fri Jan Q1 2025 06:24:08 PM
+
+SELECT
+FORMAT(CreationTime,'MMM yy'),
+COUNT(*)
+FROM
+SalesDB.Sales.Orders
+GROUP BY FORMAT(CreationTime,'MMM yy')
+
+Feb 25	4
+Jan 25	4
+Mar 25	2
+
+CONVERT   syntax:- CONVERT(date_type,value,[style)
+
+SELECT
+CreationTime,
+CONVERT(date,CreationTime),
+CONVERT(varchar,CreationTime,32) "us-format -32",
+CONVERT(varchar,CreationTime,34) "eu-format -34"
+FROM
+SalesDB.Sales.Orders
+CreationTime	(No column name)	us-format -32	eu-format -34
+2025-01-01 12:34:56.0000000	2025-01-01	01-01-2025	01-01-2025
+2025-01-05 23:22:04.0000000	2025-01-05	01-05-2025	05-01-2025
+2025-01-10 18:24:08.0000000	2025-01-10	01-10-2025	10-01-2025
+
+CAST :- 
+                                            
+
+
+
+  
+
+
+
+
