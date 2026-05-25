@@ -1,0 +1,76 @@
+CASE
+  WHEN <condition-1> THEN <Result-1>
+  WHEN <condition-2> THEN <Result-2>
+........
+  ELSE <result- else part>
+END
+
+Note :- if else part is not defined in CASE statement & any of the condition not met then it populates NULL
+
+example-1 :- CASE 
+              WHEN sales>50 THEN 'high' 
+              WHEN sales>30 THEN 'Medium'
+            ELSE 'low'
+            END
+
+case statement is used for Data Transformation ==> Derive new information ==> create new columns based on existing data.
+
+Use Case:- Categorization of data.
+
+SELECT CATEGORY,SUM(sales) SUM_OF_SALES FROM
+(
+SELECT
+OrderID,
+Sales,
+CASE WHEN Sales>50 THEN 'High'
+     WHEN Sales>30 THEN 'Medium'
+     ELSE 'Low'
+     END CATEGORY
+FROM 
+Sales.Orders
+)t
+GROUP BY CATEGORY
+ORDER BY SUM_OF_SALES desc
+
+
+CASE RULES ---Always return result should of same datatype.
+
+SELECT 
+FirstName,
+Gender,
+CASE WHEN Gender='M' THEN 'Male'
+     WHEN Gender='F' THEN 'Female'
+     ELSE 'N/A'
+     END 'GENDER_Abbreviation',
+CASE Gender WHEN 'M' THEN 'Male'
+            WHEN 'F' THEN 'Female'
+            ELSE 'N/A'
+            END 'Gender_Abbreviation2'
+FROM 
+Sales.Employees
+
+SELECT 
+FirstName,
+Gender,
+CASE WHEN Gender='M' THEN 'Male'
+     WHEN Gender='F' THEN 'Female'
+     ELSE 'N/A'
+     END 'GENDER_Abbreviation',
+CASE Gender WHEN 'M' THEN 'Male'
+            WHEN 'F' THEN 'Female'
+            ELSE 'N/A'
+            END 'Gender_Abbreviation2'
+FROM 
+Sales.Employees
+
+===> Case Quick method is used with one columns,'=' operator only
+
+Appling conditional aggregation ===> We can identiy specific set of records using case statment by populating 1 and 0.
+
+SELECT
+OrderID,
+Sales,
+CASE WHEN Sales>30 THEN 1 ELSE 0 END SALES_30
+FROM 
+Sales.Orders
+
