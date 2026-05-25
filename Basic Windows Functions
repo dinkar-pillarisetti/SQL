@@ -1,0 +1,53 @@
+1. What is data aggregation?  
+SELECT  
+COUNT(*) count,
+AVG(sales) avg,
+SUM(sales) sum,
+MAX(sales) MAX,
+MIN(sales) MIN
+FROM
+Sales.Orders
+
+SELECT  
+CustomerID,
+COUNT(*) count,
+AVG(sales) avg,
+SUM(sales) sum,
+MAX(sales) MAX,
+MIN(sales) MIN
+FROM
+Sales.Orders
+GROUP BY CustomerID
+
+Window Functions Vs Aggregation functions
+
+When using Aggregation function, will lose level of information where as using windows functions won't lose level of informaiton 
+with aggregated values.
+
+Group Aggregation :- Simple Aggregations       Window:- Aggregations + Keep Details
+                   Simple Data Analysis                  Advanced Data Analysis.
+
+--Find total sales across all orders
+SELECT 
+SUM(sales)
+FROM
+Sales.Orders
+
+--Find total sales for each product
+SELECT 
+productid,
+SUM(sales)
+FROM
+Sales.Orders
+GROUP BY ProductID
+
+
+--Find total sales for each product
+--Additionally provide details such order id,order date
+SELECT 
+OrderID,
+OrderDate,
+productid,
+SUM(sales) over(PARTITION BY productid) sum_of
+FROM
+Sales.Orders
