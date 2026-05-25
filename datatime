@@ -230,9 +230,22 @@ FROM
 Sales.Orders
 
 
-ISDATE :-- 
+ISDATE :-- to validate wheather input is date. 
 
-                                            
+Is to identify irregular format of date of the records and assign values to unique format to it.
+
+SELECT 
+dd1,
+ISDATE(dd1) as dd2,
+CASE WHEN ISDATE(dd1)=1 THEN CAST(dd1 AS date) ELSE '9999-01-01' END AS 'dd4'
+FROM
+(
+SELECT '2025-06-30' AS dd1 UNION
+SELECT '2026-05-25' UNION
+SELECT '9999' UNION
+SELECT '01-jan'
+)t
+WHERE ISDATE(dd1)=0
 
 
 
