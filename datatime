@@ -177,7 +177,61 @@ CreationTime	(No column name)	us-format -32	eu-format -34
 2025-01-05 23:22:04.0000000	2025-01-05	01-05-2025	05-01-2025
 2025-01-10 18:24:08.0000000	2025-01-10	01-10-2025	10-01-2025
 
-CAST :- 
+CAST :-  syntax :- CAST( value AS DATATYPE)
+
+SELECT
+CreationTime,
+CAST('124' AS int) as 'string to int',
+CAST(123 AS nvarchar) as 'int to string',
+CAST('2026-05-24' AS date) as 'string to date',
+CAST('2026-05-24' AS datetime2) as 'STRING TO datetime',
+CAST(CreationTime AS nvarchar) as 'datetime to date'
+FROM
+SalesDB.Sales.Orders
+
+DATEADD --> SYNTAX :- DATEADD(part,interval,date)
+example :- DATEADD(year,2,orderdate)  adding 2 years
+DATEADD(year,-4, orderdate)  subtracting 4 years
+
+SELECT
+OrderID,
+OrderDate,
+DATEADD(DAY,-10,OrderDate) AS "10DAYS_BEFORE",
+DATEADD(MONTH,2,OrderDate) AS "2MONTHS_SlATER",
+DATEADD(YEAR,3,OrderDate) AS "3YEARSlATER"
+FROM
+SalesDB.Sales.Orders
+
+
+DATEDIFF :- DATE DIFFERENCE BETWEEN 2 DATES SYNTAX :- DATEDIFF(part,start_date,end_date)
+
+SELECT 
+FirstName,
+BirthDate,
+DATEDIFF(year,BirthDate,getdate()) as age
+FROM
+Sales.Employees
+
+SELECT
+OrderDate,
+ShipDate,
+DATEDIFF(day,OrderDate,ShipDate) day2sip
+FROM
+Sales.Orders
+
+Find the no of days between last order and previous order (Time Gap analysis) 
+
+SELECT
+OrderID,
+OrderDate 'current_order_date',
+LAG(orderdate) over(ORDER BY OrderDate) 'PRVIOUS_ORDER_DATE',
+DATEDIFF(DAY,LAG(orderdate) over(ORDER BY OrderDate),OrderDate) AS 'DAYSDIFFERENCE'
+FROM
+Sales.Orders
+
+
+ISDATE :-- 
+
                                             
 
 
