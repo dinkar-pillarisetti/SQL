@@ -1,0 +1,13 @@
+Windows Count is identify any duplicate records present in the table.
+
+--To check the table orders contains any duplicate rows
+SELECT * FROM
+(
+SELECT
+OrderID,
+COUNT(*) OVER(PARTITION BY orderid) checkpk
+FROM
+Sales.OrdersArchive
+)T
+WHERE checkpk>1
+
