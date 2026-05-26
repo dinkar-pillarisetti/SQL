@@ -1,5 +1,11 @@
 Windows Count is identify any duplicate records present in the table.
 
+* gives count of all the rows and based on partition clause.
+can provide specific column to get count of it.
+=> we can provide additional information apart from count(<column>) over() 
+
+
+
 --To check the table orders contains any duplicate rows
 SELECT * FROM
 (
@@ -10,4 +16,118 @@ FROM
 Sales.OrdersArchive
 )T
 WHERE checkpk>1
+
+2. Windows SUM ==> 
+
+--Find the total sales across all orders
+--and the total sales for each product
+--additionally provide details such orderid,orderdate
+
+SELECT
+OrderID,
+OrderDate,
+Sales,
+ProductID,
+SUM(sales) OVER () TotalSales,
+SUM(sales) OVER(PARTITION BY productid) SalesByProducts
+FROM
+Sales.Orders
+
+
+SELECT
+OrderID,
+ProductID,
+Sales,
+SUM(sales) OVER() Totalsales,
+ROUND(CAST(Sales AS float)/SUM(sales) OVER() *100,2) PERENTAGETOTAL
+
+FROM
+Sales.Orders
+
+3. Windows Avg  ==> Find the average for each dataset.
+
+--Find the average sales across all orders
+--find the average sales for each product
+--additionally provide details such order id,order date
+
+SELECT
+OrderID,
+OrderDate,
+Sales,
+ProductID,
+AVG(Sales) OVER()  AvgSales,
+AVG(sales) OVER(PARTITION BY productID) AvgsalesbyProducts
+FROM sales.Orders
+
+--Find the average scores of the customers
+--additionally provide details such customerid and lastname
+
+SELECT
+CustomerID,
+LastName,
+Score,
+AVG(ISNULL(score,0)) OVER() withnulls,
+AVG(ISNULL(score,0)) OVER() avgscore
+FROM sales.Customers
+
+--Find all orders where sales are higher than average sales across all orders
+SELECT
+*
+FROM 
+(
+SELECT
+OrderID,
+ProductID,
+Sales,
+AVG(sales) OVER() AVGSALES
+FROM Sales.Orders
+)T
+WHERE Sales>AVGSALES
+
+--Find the hightes and lowest sales of all orders
+--Find the highest and lowest sales for each product
+--additionally provide details such orderid,orderdate
+
+SELECT
+OrderID,
+OrderDate,
+ProductID,
+Sales,
+MAX(sales) OVER() Highest_AllOrders,
+MIN(sales) OVER() Lowestest_AllOrders,
+MAX(sales) OVER(PARTITION BY productid) Highest_by_product,
+MIN(sales) OVER(PARTITION BY productid) Lowest_by_product
+FROM 
+Sales.Orders
+
+--show the employees who have the highest salary
+SELECT * FROM
+(
+SELECT
+*,
+MAX(Salary) over() Max_sal
+FROM
+Sales.Employees
+)T
+WHERE Salary = Max_sal
+
+
+--Find the deviation of each sales from the minimum and maximum sales amounts
+SELECT
+OrderID,
+OrderDate,
+ProductID,
+Sales,
+MAX(sales) OVER() Highest_AllOrders,
+MIN(sales) OVER() Lowestest_AllOrders,
+Sales - MIN(sales) OVER() DeviationFromMin,
+MAX(sales) OVER() - Sales DeviationFromMax
+FROM 
+Sales.Orders
+
+
+
+
+
+
 
