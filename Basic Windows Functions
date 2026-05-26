@@ -1,3 +1,5 @@
+Windows Functions :- Performs calculations on subset of data without losing details.
+
 1. What is data aggregation?  
 SELECT  
 COUNT(*) count,
@@ -51,3 +53,67 @@ productid,
 SUM(sales) over(PARTITION BY productid) sum_of
 FROM
 Sales.Orders
+
+PARTITION BY ==>   syntax:-fun() over (PARTITION BY <column1,column2... columnn> ORDER BY <column1,column2...column-n> FRAME CLAUSE)
+
+EXAMPLE:- AVG(sales) OVER (PARTITION BY Category ORDER BY orderdate)
+
+--Find total sales for each product,product-status
+--Additionally provide details such order id,order date
+SELECT 
+OrderID,
+OrderDate,
+productid,
+OrderStatus,
+sales,
+SUM(sales) over() total_sales,
+SUM(sales) over(PARTITION BY productid) sum_productid,
+SUM(sales) over(PARTITION BY productid,orderstatus) sum_productid_orderstatus
+FROM
+Sales.Orders
+
+ORDER BY CLAUSE   ===>         For Aggregate functions ORDER BY is optional.
+
+SELECT
+OrderID,
+OrderDate,
+Sales,
+RANK() OVER (ORDER BY sales desc) RANK
+FROM
+Sales.Orders
+
+
+FRAME CLAUSE :-  ROWS UNBOUNDING PRECEDING
+
+ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING
+
+ROWS ==> ROWS,RANGE
+CURRENT ROW ===> CURRENT ROW,N PRECEDING,UNBOUNDED PRECEDING
+UNBOUNDED FOLLOWING ===> CURRENT ROW,N FOLLOWING, UNBOUNDED FOLLOWING
+
+SHORT CUT :- ROWS 2 PRECEDING,ROWS UNBOUNDED PRECEDING (Always short cut is applicable for PRECEDING ONLY) 
+
+DEFAULT FUNCTIONALITY is ==> ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+
+
+
+
+Rules for Windows function
+1. We can use window function only in select and order by calsuse
+2. we can't use nesting windows functions.
+3. first WHERE CLause executes then windows function executes.
+4. Always use group by column used in windows function as well.
+
+SELECT
+CustomerID,
+SUM(sales) sum,
+RANK() OVER (ORDER BY SUM(sales) DESC) RANK
+FROM
+Sales.Orders
+GROUP BY CustomerID
+
+
+
+
+
+
