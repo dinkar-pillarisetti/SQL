@@ -1,0 +1,125 @@
+ROW_NUMBER(),RANK(),DENSE_RANK(),CUME_DIST(),PERCENT_RANK(),NTILE() ---> 
+PARTITION BY (optional) 
+ORDER BY (Mandatory)
+FRAME CLAUE (Not applicable) 
+NTILE(number) ==> accepts input remaining functions won't accept input values.
+
+1. ROW_NUMBER() OVER ( ORDER BY sales DESC)   ===> it generates unique number, it won't handle ties it generates number based order by clause
+
+--Rank the orders based on their sales from highest to lowest
+SELECT 
+OrderID,
+ProductID,
+Sales,
+ROW_NUMBER() OVER( ORDER BY sales DESC) salesrank
+FROM
+Sales.Orders
+
+2. RANK ==> Shared Ranking, leaving gaps (skipping) Example is Olympics if player shares same score gold will be given to same 
+score player, silver is skipped , next player will be awarded with Bronze.
+note:- gaps in the ranks.
+
+--Rank the orders based on their sales from highest to lowest
+SELECT 
+OrderID,
+ProductID,
+Sales,
+ROW_NUMBER() OVER( ORDER BY sales DESC) rownumber,
+RANK() OVER( ORDER BY sales DESC) rank
+FROM
+Sales.Orders
+
+DENSE_RANK() ==> Skipping won't happen, next rank will be awareded. Competitive exams if student get same marks then same rank will be
+allocated.
+note :- no gaps in the ranks.
+
+--Rank the orders based on their sales from highest to lowest
+SELECT 
+OrderID,
+ProductID,
+Sales,
+ROW_NUMBER() OVER( ORDER BY sales DESC) rownumber,
+RANK()       OVER( ORDER BY sales DESC) rank,
+DENSE_RANK() OVER (ORDER BY sales DESC) DenseRank
+FROM
+Sales.Orders
+
+4. TOP-N ANALYSIS ==> want to know top performers to do targeted marketing.
+
+--Find the top highest sales for each product
+SELECT * FROM 
+(
+SELECT
+OrderID,
+ProductID,
+Sales,
+ROW_NUMBER() OVER(PARTITION BY productid ORDER BY sales DESC) RankByProduct
+FROM 
+sales.Orders
+)t WHERE RankByProduct=1
+
+4. BOTTON-N ANALYSIS ==> want to know least performers to improve.
+
+--Find the  lowest sales for each product
+
+SELECT * FROM 
+(
+SELECT
+OrderID,
+ProductID,
+Sales,
+ROW_NUMBER() OVER(PARTITION BY productid ORDER BY sales) RankByProduct
+FROM 
+sales.Orders
+)t WHERE RankByProduct=1
+
+--Find the lowest 2 customers based on their total sales
+SELECT * FROM(
+SELECT
+CustomerID,
+SUM(sales) SUM_SALES,
+ROW_NUMBER() OVER(ORDER BY SUM(sales)) rankcustomers
+FROM Sales.Orders
+GROUP BY CustomerID
+)T
+WHERE rankcustomers <=2
+
+5. Assign unique IDs to the rows 
+
+--Assign unique IDs to the rows of the orders Archieve
+SELECT 
+ROW_NUMBER() OVER(ORDER BY orderid,orderdate) uniqueid,
+*
+FROM
+Sales.OrdersArchive
+
+6. Identify Duplicates and remove the duplicates ==>clean the data.
+
+clean data query is below.
+
+--Identify duplicate rows in the table 'Orders Archieve'
+--and return a clean result without any duplicates
+SELECT * FROM (
+SELECT 
+ROW_NUMBER() OVER(PARTITION BY orderid ORDER BY creationtime DESC) RN,
+*
+FROM
+Sales.OrdersArchive
+)t
+WHERE RN=1
+
+duplicate or bad data query is below.
+
+SELECT * FROM (
+SELECT 
+ROW_NUMBER() OVER(PARTITION BY orderid ORDER BY creationtime DESC) RN,
+*
+FROM
+Sales.OrdersArchive
+)t
+WHERE RN>1
+
+
+
+
+
