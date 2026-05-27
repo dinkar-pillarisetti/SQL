@@ -125,6 +125,28 @@ MAX(sales) OVER() - Sales DeviationFromMax
 FROM 
 Sales.Orders
 
+Running Total :- Rows BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+Example :- SUM(sales) OVER( ORDER BY Month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+Rolling Total :- ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+Example :- SUM(sales) OVER( ORDER BY Month ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)
+
+Moving Average :- Its similar to running totals.
+
+--Calcuate moving averages of sales for each product over time
+
+SELECT
+OrderID,
+ProductID,
+OrderDate,
+Sales,
+AVG(sales) OVER( PARTITION BY productid) AVGSALES,
+AVG(sales) OVER(PARTITION BY productid ORDER BY orderdate) avg_order,
+AVG(sales) OVER( ORDER BY productid ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) MOVING_AVGS,
+AVG(sales) OVER(PARTITION BY productid ORDER BY orderdate ROWS BETWEEN CURRENT ROW AND 1 FOLLOWING) ROLLING_AVG
+FROM
+Sales.Orders
+
+
 
 
 
