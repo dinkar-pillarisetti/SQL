@@ -35,6 +35,12 @@ Sales.Orders
 GROUP BY MONTH(OrderDate)
 )t
 
+--Find the average shipping duration in days for each month
+SELECT
+MONTH(shipdate) mon,
+AVG(DATEDIFF(DAY,OrderDate,ShipDate)) diff_days
+FROM Sales.Orders
+group by MONTH(shipdate)
 
 --Time Gap Analysis
 --Find the number o days between each oder and the previous order
@@ -47,8 +53,24 @@ FROM
 Sales.Orders
 
 FIRST_VALUE() & LAST_VALUE() ==>Syntax: FIRST_VALUE(Sales) OVER( ORDER BY Month)
-LAST_VALUE(Sales) OVER(ORDER BY MONTH)
 
 Note 1:- RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW    ==== Default
+
+LAST_VALUE(Sales) OVER(ORDER BY MONTH ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING)
+
+--Find the lowest and highest sales for each product
+SELECT
+	OrderID,
+	ProductID,
+	Sales,
+	FIRST_VALUE(SALES) OVER(PARTITION BY PRODUCTID ORDER BY SALES) firstvalue,
+	FIRST_VALUE(SALES) OVER(PARTITION BY PRODUCTID ORDER BY SALES desc) lastvalue,
+	LAST_VALUE(SALES) OVER(PARTITION BY PRODUCTID ORDER BY SALES ROWS BETWEEN CURRENT ROW AND 
+	UNBOUNDED FOLLOWING) lastvalue2,
+	MIN(SALES) OVER(PARTITION BY PRODUCTID) LOWESTVALUE,
+	MAX(SALES) OVER(PARTITION BY PRODUCTID) HIGHESTVALUE
+	
+FROM Sales.Orders
+
 
 
