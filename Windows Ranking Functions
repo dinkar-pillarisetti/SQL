@@ -119,7 +119,77 @@ Sales.OrdersArchive
 )t
 WHERE RN>1
 
+CUME_DIST()/PERCENT_RANK() position is identified based on percentage of postion.
+ROW_NUMBER,RANK() generate numberic number as rank, where as CUME_DIST/PERCENT_RANK generates percentage of positin of row 
+based on sorting order.
+
+6. CUME_DIST ==> CUME_DIST() OVER(ORDER BY sales DESC)
+CUME_DIST = Position of Row/Number of Rows
+PERCENT_RANK() = POSITION OF ROW -1/NUMBER OF ROWS -1
+PERCENT_RANK() OVER (ORDER BY sales DESC) 
+
+CUME_DIST is inclusive of current row where was PERCENT_RANK() exclusive of current row.
+
+--find the products that fall within the highest 40% of the prices
+SELECT *,CONCAT(distRank*100,'%') DIST FROM (
+SELECT
+Product,
+Price,
+CUME_DIST() OVER(ORDER BY PRICE DESC) distRank
+FROM
+Sales.Products
+)t
+WHERE distRank <=0.4
 
 
+--find the products that fall within the highest 50% of the prices USING PERCENT_RANK
+SELECT *,CONCAT(distRank*100,'%') DIST FROM (
+SELECT
+Product,
+Price,
+PERCENT_RANK() OVER(ORDER BY PRICE DESC) distRank
+FROM
+Sales.Products
+)t
+WHERE distRank <=0.5
+
+7. NTILE(input as number) OVER(ORDER BY sales DESC)
+==> Divides the rows into a specified number of approximately equal groups (Buckets)
+Bucket size = No. of Rows/ Number of buckets(input as number)
+SQL Rule ==> When we decimal point when handling bucket size always Larger group comes first.
+
+SELECT
+OrderID,
+Sales,
+NTILE(1) OVER (ORDER BY sales DESC) BUCKET1,
+NTILE(2) OVER (ORDER BY sales DESC) BUCKET2,
+NTILE(3) OVER (ORDER BY sales DESC) BUCKET3,
+NTILE(4) OVER (ORDER BY sales DESC) BUCKET4
+FROM Sales.Orders
+
+i. Data Segmentation :- Divides a dataset into distinct subsets based on certain criteria
+
+--segment all order into 3 categories :High,medium  and low sales
+SELECT 
+*,
+CASE WHEN buckets=1 THEN 'High'
+	 WHEN buckets=2 THEN 'Medium'
+	 WHEN buckets=3 THEN 'Low' END
+FROM (
+	SELECT
+	OrderID,
+	Sales,
+	NTILE(3) OVER(ORDER BY sales DESC) buckets
+	FROM Sales.Orders
+)t
+
+2. Usecase - when table is big, split the table data to split into 4-5 buckets using NTILE(4) then combine using after data loading
+which reduce network tranfic. 
+
+--In order to export the data, divide the orders into 2 groups
+SELECT
+NTILE(2) OVER(ORDER BY orderid) buckets,
+*
+FROM Sales.Orders
 
 
