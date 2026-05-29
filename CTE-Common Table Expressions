@@ -34,4 +34,142 @@ FROM Sales.Customers c LEFT JOIN cte_totalsales_customer cte
 ON c.CustomerID=cte.CustomerID
 ORDER BY cte.Total_sales DESC
 
+Multiple Standalone CTEs :- multiple standalone CTEs created later join in main query.
+WITH CTE-Name1 AS
+(
+SELECT ..... 
+FROM .... 
+WHERE ....
+)
+, CTE-Name2 AS
+(
+SELECT ..... 
+FROM .... 
+WHERE ....
+)
+, CTE-Name3 AS
+(
+SELECT ..... 
+FROM .... 
+WHERE ....
+)
+--Main Query
+SELECT ....
+FROM CTE-Name1 JOIN CTE-NAME2 JOIN CTE-NAME3
+WHERE....
+
+--find the total sales per customer
+--find the last shipping date per customer
+--Common Table Expression CTE
+WITH cte_totalsales_customer AS
+(
+	SELECT
+	CustomerID,
+	SUM(sales) Total_sales
+	FROM Sales.Orders
+	GROUP BY CustomerID
+)
+,cte_last_order AS
+(
+	SELECT
+	CustomerID,
+	MAX(ShipDate) last_shipping
+	FROM Sales.Orders
+	GROUP BY CustomerID 
+)
+
+--Main Query
+SELECT 
+	c.CustomerID,
+	c.FirstName,
+	c.LastName,
+	cte.Total_sales,
+	clo.last_shipping
+FROM Sales.Customers c LEFT JOIN cte_totalsales_customer cte
+ON c.CustomerID=cte.CustomerID
+LEFT JOIN cte_last_order clo ON clo.CustomerID = c.CustomerID
+ORDER BY cte.Total_sales DESC
+
+3. NESTED CTE : 2nd CTE is dependent on 1st 
+syntax:-
+WITH CTE-Name1 AS
+(
+SELECT ....
+FROM ....
+WHERE ....
+)
+, CTE-Name2 AS
+(
+SELECT ....
+FROM ....
+WHERE ....
+)
+--Main Query
+SELECT...
+FROM CTE-Name2
+WHERE ....
+
+--Common Table Expression CTE
+--step:1find the total sales per customer
+--step:2 find the last shipping date per customer
+--step:3 Rank customers based on total sales per customer
+--step:4 Segment customers based on their total sales
+
+--step:1find the total sales per customer
+WITH cte_totalsales_customer AS
+(
+	SELECT
+	CustomerID,
+	SUM(sales) Total_sales
+	FROM Sales.Orders
+	GROUP BY CustomerID
+)
+--step:2 find the last ORDER date per customer
+,cte_last_order AS
+(
+	SELECT
+	CustomerID,
+	MAX(OrderDate) last_order
+	FROM Sales.Orders
+	GROUP BY CustomerID 
+)
+--step:3 Rank customers based on total sales per customer (NESTED CTE)
+,cte_customer_rank AS
+(
+SELECT 
+CustomerID,
+Total_sales,
+RANK() OVER (ORDER BY customerID DESC) cust_rank
+FROM cte_totalsales_customer
+)
+--step:4 Segment customers based on their total sales (NESTED CTE)
+, cte_customer_segments AS
+(
+SELECT
+customerid,
+Total_sales,
+CASE WHEN Total_sales>100 THEN 'High'
+ WHEN Total_sales>50 THEN 'Medium'
+ELSE 'Low' END customer_segments
+FROM  cte_totalsales_customer
+)
+--Main Query
+SELECT 
+	c.CustomerID,
+	c.FirstName,
+	c.LastName,
+	cte.Total_sales,
+	clo.last_order,
+	ccr.cust_rank,
+	ccs.customer_segments
+FROM Sales.Customers c LEFT JOIN cte_totalsales_customer cte
+ON c.CustomerID=cte.CustomerID
+LEFT JOIN cte_last_order clo ON clo.CustomerID = c.CustomerID
+LEFT JOIN cte_customer_rank ccr  ON ccr.CustomerID = c.CustomerID
+LEFT JOIN cte_customer_segments ccs ON ccs.CustomerID = c.CustomerID
+ORDER BY cte.Total_sales DESC
+
+CTE Best Practices ==> 
+
+
 
