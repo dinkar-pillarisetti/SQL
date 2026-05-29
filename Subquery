@@ -21,7 +21,114 @@ iv. WHERE  1. Comparsion operators i.e., <,>,=,!=,>=,<= 2. Logical operators i.e
 
 3. Subquery Result Types:- 
 
+i. Scalar subquery :- returns only single value result. ex:- SELECT AVG(sales) FROM sales.orders
+ii. row subquery :- returns multiple rows & single column ex:- SELECT CUSTOMERID FROM sales.orders
+iii. table subquery:- returns multiple rows & multiple columns ex:-  SELECT CUSTOMERID,sales FROM sales.orders
 
+4. subquery in FROM clause :- Used as temporary table for the main query
+syntax:- SELECT column1,column2.... FROM ( SELECT column FROM table1 WHERE condition) AS alias
 
+--Find the products that have a price higher than the average price of all products
+--Main query
+SELECT 
+*
+FROM
+	(
+	--subquery
+	SELECT
+	ProductID,
+	Price,
+	AVG(PRICE) OVER () Avgprice
+	FROM Sales.Products
+	)T
+WHERE Price > Avgprice
 
+SELECT
+*,
+RANK() OVER( ORDER BY Sumsales DESC) CUSTO_RANK
+FROM
+(
+SELECT
+CustomerID,
+SUM(sales) Sumsales
+FROM Sales.Orders
+GROUP BY CustomerID
+)T
+
+--Rank customers based on their total amount of sales
+SELECT
+CustomerID,
+SUM(sales),
+RANK() OVER(ORDER BY SUM(sales) DESC)
+FROM Sales.Orders
+GROUP BY CustomerID
+
+5. How DB executes subquery
+Database Engine retrives subquery query result set from DISKSPACE->USER and stores in CACHE ==>Main query is executed on 
+subquery result set.
+
+6. subquery in SELECT clause 
+Note:- only scalar subquery is allowed.
+syntax:- 
+
+SELECT
+columns1,
+(SELECT column FROM table1 WHERE condition) AS alias --result should be scalar i.e., only 1 value
+FROM table1
+
+--show the Productids,productnames and total number of orders
+SELECT
+ProductID,
+product,
+price,
+(SELECT COUNT(*)  FROM Sales.Orders) totalorders
+
+FROM
+Sales.Products
+
+7. subquery in JOIN clause ==> used to prepare the data(filtering & aggregation) before joining it with other table.
+
+--show all customer details and find the total order of each customer
+--Main query
+SELECT
+c.*,
+T.totalorders
+FROM sales.Customers c
+LEFT JOIN 
+(
+--subquery
+SELECT 
+customerid,
+count(*) totalorders
+FROM Sales.Orders
+GROUP BY CustomerID
+)T
+ON c.CustomerID = T.CustomerID
+
+8. Subquery in WHERE clause
+
+comparsion operators :- =,<>,!=,>,>=,<,<= Always used with Scarlar subquery.
+Syntax:- 
+SELECT column1,column2..... 
+FROM table1 
+WHERE column = (SELECT column FROM table2 WHERE condition)
+
+--Find the products that have a prie higher than the average price of all products
+--Main query
+SELECT
+productid,
+price
+FROM Sales.Products
+WHERE Price > (SELECT AVG(price) FROM Sales.Products)  --subquery
+
+Logical operator IN :-  subquery returns multiple rows and single column.
+
+--Show the details of orders made by customers in Germay
+--Main Query
+SELECT * FROM Sales.Orders
+WHERE CustomerID IN (
+--sub query
+SELECT CustomerID FROM Sales.Customers WHERE Country='Germany')
+
+ANY/ALL Operator :- ANY :- Must satisfy any of the value in the list. ALL :- Must satisfy all the value in the list.
 
