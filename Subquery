@@ -1,0 +1,27 @@
+1.Why Subquery:-  step-1 Join Tables (sub query) ==> step-2 Filtering  (sub query) ==> step-3 Transformation (Sub Query)
+==> Step-4 Aggregation(Main Query)
+Outer query <== Inner query or Main Query <== (sub query -1<==subquery-2<==subquery-3 <==......)
+
+2. subquery categories:-  
+
+Dependency
+i. Non-Correlated subquery: subquery is independent on main query.
+ii. correlated subquery: subquery is dependent on main query. 
+
+Result type:-
+i. Scalar subquery: return only 1 value
+ii. Row subquery: return multiple rows
+iii. Table Subquery: returns multiple rows and columns
+
+Location clause:-
+i. SELECT
+ii. FROM
+iii. JOIN
+iv. WHERE  1. Comparsion operators i.e., <,>,=,!=,>=,<= 2. Logical operators i.e., IN,ANY,ALL,EXISTS
+
+3. Subquery Result Types:- 
+
+
+
+
+
