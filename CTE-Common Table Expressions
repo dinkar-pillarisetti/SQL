@@ -1,0 +1,37 @@
+CTE - Common Table Expressions ==> Temporary, named result set(virtual table), that can be used multiple times within query
+to simplify and organize complex query.
+
+Note:- ORDER BY clause is invalid in views,inline functions,derived tables,subqueries & CTEs.. you can use ORDER BY clause in 
+Main query.
+
+How CTE executed in DB:- CTE resultset is stored in cache.. every time main query needs it takes data from cache.
+
+CTE Types 1. None recursive CTE ===> i. Standalone CTE ii. Nested CTE
+2. Recursive CTE
+
+1. Standlone CTE :- doesn't depend on anything.
+syntax:- 
+WITH <cte_name> AS (SELECT ... FROM... WHERE ....)   --CTE query
+SELECT .... FROM <cte_name> WHERE......              --Main query 
+
+--find the total sales per customer
+--Common Table Expression CTE
+WITH cte_totalsales_customer AS
+(
+SELECT
+CustomerID,
+SUM(sales) Total_sales
+FROM Sales.Orders
+GROUP BY CustomerID
+)
+--Main Query
+SELECT 
+c.CustomerID,
+c.FirstName,
+c.LastName,
+cte.Total_sales 
+FROM Sales.Customers c LEFT JOIN cte_totalsales_customer cte
+ON c.CustomerID=cte.CustomerID
+ORDER BY cte.Total_sales DESC
+
+
