@@ -132,3 +132,45 @@ SELECT CustomerID FROM Sales.Customers WHERE Country='Germany')
 
 ANY/ALL Operator :- ANY :- Must satisfy any of the value in the list. ALL :- Must satisfy all the value in the list.
 
+--Find female employees whose salaries are greater than the salaries of ANY male employees
+SELECT * FROM Sales.Employees WHERE Gender = 'F'
+AND Salary > ANY ( SELECT SALARY FROM Sales.Employees WHERE GENDER = 'M')
+
+--Find female employees whose salaries are greater than the salaries of ALL male employees
+SELECT * FROM Sales.Employees WHERE Gender = 'F'
+AND Salary > ALL ( SELECT SALARY FROM Sales.Employees WHERE GENDER = 'M')
+
+CORRELATED SUBQUERY :- Subquery relays on values from the main query i.e., depend on main query rows..subquery excecutes everytime
+records present in main query suppose if main query has 10 records, subquery executes 10 times.
+NON CORRELATED SUBQUERY :- subquery execute once and push result to main query.
+
+--show all customer details and find the total orders for each customer
+--main query
+SELECT *,
+--correlated subquery
+(SELECT COUNT(*) FROM Sales.Orders o WHERE o.CustomerID = c.customerid)
+FROM Sales.Customers c
+
+correlated subquery in WHERE clause EXISTS operator
+
+EXISTS :- checks main query result is present subquery set, if its present it keeps in result set else it skips.
+
+syntax:- SELECT column1,column2,....
+FROM table2
+WHERE EXISTS ( SELECT 1 FROM table1)
+
+--show the details of orders made by customers not in germany
+SELECT
+*
+FROM Sales.Orders
+WHERE EXISTS( SELECT 1 FROM Sales.Customers WHERE Country= 'Germany')
+
+USECASES
+1. Create temporary result set
+2. prepare data before joining tables.
+3. Dynamic & complex filtering
+4. check the existence of rows from another table (EXITS)
+5. ROW BY ROW comparison - Correlated subquery.
+
+
+
