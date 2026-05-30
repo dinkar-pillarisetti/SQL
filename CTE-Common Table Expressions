@@ -170,6 +170,66 @@ LEFT JOIN cte_customer_segments ccs ON ccs.CustomerID = c.CustomerID
 ORDER BY cte.Total_sales DESC
 
 CTE Best Practices ==> 
+limit the 4-5 CTE to the query.
+=> Readability: Breaks down complex queries into smaller pieces.
+=>Modularity : pices are easy to manage, develop and self contained.
+=> Reusability : reduce redundancy in query... we can same code in different places in query.
+=> Recursive : Iterations & looping in SQL.
+
+Disadvantage :- We can use code only within query... we can't use in other or external query.
 
 
+RECURSIVE CTE 
+syntax:-
+WITH CTE-Name AS
+(
+--Anchor Query
+SELECT .....
+FROM ....
+WHERE ....
+UNION ALL
+--Recursive query
+SELECT....
+FROM CTE-Name
+WHERE <Break condition>
+)
 
+Example-1
+WITH Series AS
+(
+--Anchor Query
+SELECT 1 AS Mynumber
+UNION ALL
+--Recursive Query
+SELECT Mynumber+1 
+FROM Series
+WHERE Mynumber<20
+)
+--Main Query
+SELECT * FROM Series
+
+
+Example-2
+WITH CTE_EMP_Hierarchy AS
+(
+--Anchor query
+SELECT
+EmployeeID,
+FirstName,
+ManagerID,
+1 AS Level
+FROM 
+Sales.Employees
+WHERE ManagerID IS NULL
+UNION ALL
+--Recursive Query
+SELECT
+e.EmployeeID,
+e.FirstName,
+e.ManagerID,
+Level+1
+ FROM Sales.Employees AS e
+INNER JOIN  CTE_EMP_Hierarchy ceh
+ON e.ManagerID = ceh.EmployeeID
+)
+SELECT * FROM CTE_EMP_Hierarchy
